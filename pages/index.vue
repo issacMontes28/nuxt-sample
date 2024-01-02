@@ -6,15 +6,19 @@
 </template>
 <script>
 import EventCard from '@/components/EventCard.vue'
+//import EventService from '@/services/EventService'
+import { mapState } from 'vuex'
+
 export default {
   head() {
     return {
       'title': 'Event Listening'
     }
   },
-  async asyncData({ $axios, error }) {
+  //we not longer need asyncData since we're not working with component data, but with vuexStore data
+  /*async asyncData({ error }) {
     try {
-      const { data } = await $axios.get('http://127.0.0.1:3000/events')
+      const { data } = await EventService.getEvents()
 
       return {
         events: data
@@ -25,7 +29,19 @@ export default {
         statusCode: 503, message: 'Unable to fetch events at this time, please try again'
       })
     }
+  },*/
+  async fetch({ store, error }) {
+    try {
+      await store.dispatch('events/fetchEvents')
+    } catch (e) {
+      error({
+        statusCode: 503, message: 'Unable to fetch events at this time, please try again'
+      })
+    }
   },
+  computed: mapState({
+    events: state => state.events.events
+  }),
   components: {
     EventCard
   }
