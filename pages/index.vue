@@ -1,11 +1,33 @@
 <template>
-  <Tutorial/>
+  <div>
+    <h1>Events</h1>
+    <EventCard v-for="(event, index) in events" :key="index" :event="event" :data-index="index" />
+  </div>
 </template>
+<script>
+import EventCard from '@/components/EventCard.vue'
+export default {
+  head() {
+    return {
+      'title': 'Event Listening'
+    }
+  },
+  async asyncData({ $axios, error }) {
+    try {
+      const { data } = await $axios.get('http://127.0.0.1:3000/events')
 
-<script lang="ts">
-import Vue from 'vue'
+      return {
+        events: data
+      }
 
-export default Vue.extend({
-  name: 'IndexPage'
-})
+    } catch (e) {
+      error({
+        statusCode: 503, message: 'Unable to fetch events at this time, please try again'
+      })
+    }
+  },
+  components: {
+    EventCard
+  }
+}
 </script>
